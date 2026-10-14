@@ -1,0 +1,11 @@
+.git
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+mlruns
+data/raw/
+models/*.zip
+models/*.joblib
+phase1_presentation_assets.zip

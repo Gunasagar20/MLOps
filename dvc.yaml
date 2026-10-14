@@ -1,0 +1,65 @@
+stages:
+  prepare:
+    cmd: python scripts/fetch_data.py
+    deps:
+      - scripts/fetch_data.py
+    outs:
+      - data/raw/citylearn_challenge_2023_phase_1:
+          persist: true
+      - data/raw/citylearn_challenge_2020_climate_zone_1:
+          persist: true
+      - data/raw/citylearn_challenge_2022_phase_all_plus_evs:
+          persist: true
+
+  eda:
+    cmd: python -m src.rle.eda
+    deps:
+      - src/rle/eda.py
+      - data/raw/citylearn_challenge_2023_phase_1
+    outs:
+      - reports/eda/EDA_SUMMARY.md:
+          cache: false
+      - reports/eda/smoke_2023_quality.csv:
+          cache: false
+
+  features:
+    cmd: python -m src.rle.build_features
+    deps:
+      - src/rle/features.py
+      - src/rle/build_features.py
+      - configs/features.yaml
+      - data/raw/citylearn_challenge_2023_phase_1
+    outs:
+      - data/processed/features_summary.csv:
+          cache: false
+
+  forecast:
+    cmd: python -m src.rle.forecast
+    deps:
+      - src/rle/forecast.py
+      - data/raw/citylearn_challenge_2020_climate_zone_1
+      - params.yaml
+    outs:
+      - reports/forecast_metrics.csv:
+          cache: false
+
+  baselines:
+    cmd: python -m src.rle.run_baselines
+    deps:
+      - src/rle/agents.py
+      - src/rle/run_baselines.py
+      - data/raw/citylearn_challenge_2023_phase_1
+      - params.yaml
+    outs:
+      - reports/baseline_kpis.csv:
+          cache: false
+
+  report:
+    cmd: python -m src.rle.report
+    deps:
+      - src/rle/report.py
+      - reports/baseline_kpis.csv
+      - reports/forecast_metrics.csv
+    outs:
+      - reports/PHASE1_EVALUATION.md:
+          cache: false

@@ -1,0 +1,108 @@
+fast_mode: true
+
+seeds:
+  - 0
+
+sac:
+  train_timesteps_fast: 1500
+  train_timesteps_full: 50000
+  learning_rate: 0.0003
+  buffer_size: 50000
+  batch_size: 256
+  tau: 0.005
+  gamma: 0.99
+
+forecast:
+  models:
+    - persistence
+    - seasonal_naive
+    - ridge
+    - hist_gbm
+
+scenarios:
+  smoke_2023:
+    dataset: citylearn_challenge_2023_phase_1
+    train_start: 0
+    train_end: 480
+    test_start: 480
+    test_end: 720
+  hvac_cz1:
+    dataset: citylearn_challenge_2020_climate_zone_1
+    train_start: 0
+    train_end: 6000
+    test_start: 6000
+    test_end: 8760
+  hvac_cz2:
+    dataset: citylearn_challenge_2020_climate_zone_2
+    train_start: 0
+    train_end: 6000
+    test_start: 6000
+    test_end: 8760
+  hvac_cz3:
+    dataset: citylearn_challenge_2020_climate_zone_3
+    train_start: 0
+    train_end: 6000
+    test_start: 6000
+    test_end: 8760
+  hvac_cz4:
+    dataset: citylearn_challenge_2020_climate_zone_4
+    train_start: 0
+    train_end: 6000
+    test_start: 6000
+    test_end: 8760
+  ev_2022:
+    dataset: citylearn_challenge_2022_phase_all_plus_evs
+    train_start: 0
+    train_end: 6000
+    test_start: 6000
+    test_end: 8760
+
+# Phase 2 evaluation structure (designed in Phase 1, executed in Phase 2)
+generalization:
+  levels:
+    L1_within_family: "Unseen configs of known asset families (e.g., different climate zones)"
+    L2_cross_family_zero_shot: "Hold out entire asset family, no fine-tuning"
+    L3_few_shot_adaptation: "Hold out family + limited interaction budget"
+    L4_compositional: "Stretch: unseen combo of known behaviors (supercapacitor)"
+
+  held_out_families:
+    - electrical_storage
+    - cooling_storage
+    - electric_vehicle_storage
+
+  few_shot:
+    interaction_budget_steps: [100, 250, 500]
+    target_gap_closure: 0.50  # H1b: generalist should close >=50% of specialist gap
+
+  specialist:
+    train_timesteps: 50000
+    seeds: [0, 1, 2, 3, 4]
+
+  generalist:
+    train_timesteps: 50000
+    seeds: [0, 1, 2, 3, 4]
+    descriptor_vector_dim: 9  # Matches AssetDescriptor.to_vector() output
+
+experiments:
+  E1_within_family:
+    description: "Performance on unseen building configs of known asset types"
+    generalization_level: L1
+    scenarios: [hvac_cz1, hvac_cz2, hvac_cz3, hvac_cz4]
+  E2_cross_family_zero_shot:
+    description: "Leave-one-asset-family-out; no fine-tuning"
+    generalization_level: L2
+    metric: transfer_gap
+  E3_few_shot:
+    description: "Same held-out family, <=500 interaction steps"
+    generalization_level: L3
+    metric: gap_closure_ratio
+  E4_explanation_faithfulness:
+    description: "Do explanations remain faithful on held-out family?"
+    generalization_level: L2
+    phase: 3
+  E5_drift_discrimination:
+    description: "Benign (seasonal) vs harmful (concept) drift detection"
+    phase: 3
+  E6_promotion_gate:
+    description: "OPE-only vs OPE+faithfulness gate false-promotion rate"
+    phase: 3

@@ -1,0 +1,71 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python scripts/fetch_data.py
+    deps:
+    - path: scripts/fetch_data.py
+      hash: md5
+      md5: 0431fb90626736a197c3b2ab59e8bd56
+      size: 3244
+    outs:
+    - path: data/raw/citylearn_challenge_2020_climate_zone_1
+      hash: md5
+      md5: d64903a8c86df451f1680ccb0e395f29.dir
+      size: 4727453
+      nfiles: 12
+    - path: data/raw/citylearn_challenge_2022_phase_all_plus_evs
+      hash: md5
+      md5: 7b45e560d0c28ddb7a0e29883f523afe.dir
+      size: 13077248
+      nfiles: 31
+    - path: data/raw/citylearn_challenge_2023_phase_1
+      hash: md5
+      md5: 31fb26b5df4f52d5069a873a30492286.dir
+      size: 545000
+      nfiles: 10
+  eda:
+    cmd: python -m src.rle.eda
+    deps:
+    - path: data/raw/citylearn_challenge_2023_phase_1
+      hash: md5
+      md5: 31fb26b5df4f52d5069a873a30492286.dir
+      size: 545000
+      nfiles: 10
+    - path: src/rle/eda.py
+      hash: md5
+      md5: d82bc9d74a5c8f7e6adb12acfcfba44a
+      size: 9724
+    outs:
+    - path: reports/eda/EDA_SUMMARY.md
+      hash: md5
+      md5: 325ab8f484afce577084f5ee580aef75
+      size: 2582
+    - path: reports/eda/smoke_2023_quality.csv
+      hash: md5
+      md5: 98cf88e1de0192f8ff6f40ebf948b475
+      size: 920
+  features:
+    cmd: python -m src.rle.build_features
+    deps:
+    - path: configs/features.yaml
+      hash: md5
+      md5: 48aec5d332aa0c6da3d4fdcd200a934e
+      size: 3960
+    - path: data/raw/citylearn_challenge_2023_phase_1
+      hash: md5
+      md5: 31fb26b5df4f52d5069a873a30492286.dir
+      size: 545000
+      nfiles: 10
+    - path: src/rle/build_features.py
+      hash: md5
+      md5: f080fa0abd56c6fc4b0fd4a38d791568
+      size: 1857
+    - path: src/rle/features.py
+      hash: md5
+      md5: 317533d42a4f02f16703c8b48681b668
+      size: 6110
+    outs:
+    - path: data/processed/features_summary.csv
+      hash: md5
+      md5: 69e67994740b42ebf03dfd076c76635f
+      size: 811

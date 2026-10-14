@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+env/
+venv/
+ENV/
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing & Linting
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# Data and Models (tracked by DVC)
+data/
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+models/*.zip
+models/*.pt
+models/*.pth
+models/*.joblib
+!models/.gitkeep
+phase1_presentation_assets.zip
+
+# MLflow
+mlruns/
+mlflow/*.db
+mlflow/artifacts/
+!mlflow/.gitkeep
+
+# DVC local remotes and cache
+.dvc/cache/
+.dvc/tmp/
+.dvc/config.local
+dvc_remote/
+
+# OS and Editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
